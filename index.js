@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {StyleSheet, Dimensions } from 'react-native';
+import { AppRegistry } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons, Foundation } from '@expo/vector-icons';
@@ -18,7 +18,7 @@ function App() {
             activeColor='#8FBCBB'
             inactiveColor='#D8DEE9'
         >
-            {/* <Tab.Screen
+          <Tab.Screen
               name="List"
               component={HomeScreen}
               options={{
@@ -27,7 +27,7 @@ function App() {
                       <Foundation name="list" color={color} size={25} />
                   )
               }}
-          />*/}
+          />
           <Tab.Screen
               name="Speed Test"
               component={SpeedTestScreen}
@@ -43,4 +43,4 @@ function App() {
   );
 }
 
-export default App;
+AppRegistry.registerComponent('WiFiAnalyzer', () => App);

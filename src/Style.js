@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
         fontWeight: '700'
     },
     lightText: {
-        color: '#ECEFF4'
+        color: '#E5E9F0'
     },
     lightText2: {
         color: '#A3BE8C'
