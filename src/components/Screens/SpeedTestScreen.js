@@ -2,13 +2,50 @@ import React, { Component } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import styles from '../../Style.js';
 import RNSpeedometer from 'react-native-speedometer';
+import RNFetchBlob from "rn-fetch-blob";
 
 class SpeedTestScreen extends Component {
     state = {
         value: 0,
+        progress: 0,
+        downloadSpeed: 0,
+        imageUrl: 'https://wifi-analyzer-final.s3.amazonaws.com/test-image.jpg',
     }
 
     onChange = (value) => this.setState({value: parseInt(value)});
+
+    onPress = () => {
+        const startTime = new Date().getTime();
+        const speeds = [];
+
+        RNFetchBlob.config({
+            fileCache: false,
+        })
+            .fetch('GET', this.state.imageUrl)
+            .progress({ interval: 250 }, (received, total) => {
+                let progress = (received/total) * 100;
+                let currentTime = new Date().getTime();
+                let duration = (currentTime - startTime) / 1000;
+                let speed = ((received * 8) / (1024 ** 2 * duration));
+
+                speeds.push(speed);
+                console.log('received', speed);
+                this.setState({ value: speed })
+            })
+            .then((res) => {
+              let status = res.info().status;
+              let endTime = new Date().getTime();
+              let finalSpeed = (speeds.reduce((total, value) => total + value)) / speeds.length;
+
+              if (status === 200) {
+                  console.log("Got good response, cool " + finalSpeed);
+              }
+            })
+            .catch((err, statusCode) => {
+                console.log(err);
+                console.log(statusCode);
+            });
+    }
 
     render() {
         return (

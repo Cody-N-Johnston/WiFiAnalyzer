@@ -1,46 +1,9 @@
-import * as React from 'react';
-import { AppRegistry } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { MaterialCommunityIcons, Foundation } from '@expo/vector-icons';
-import HomeScreen from './src/components/Screens/HomeScreen.js';
-import SpeedTestScreen from "./src/components/Screens/SpeedTestScreen";
+import { AppRegistry, Platform } from 'react-native';
+import App from './App';
 
-const Tab = createMaterialBottomTabNavigator();
+AppRegistry.registerComponent('main', () => App);
 
-function App() {
-  return (
-      <NavigationContainer>
-        <Tab.Navigator
-            barStyle={{
-                backgroundColor: '#2E3440'
-            }}
-            activeColor='#8FBCBB'
-            inactiveColor='#D8DEE9'
-        >
-          <Tab.Screen
-              name="List"
-              component={HomeScreen}
-              options={{
-                  tabBarLabel: 'List',
-                  tabBarIcon: ({ color}) => (
-                      <Foundation name="list" color={color} size={25} />
-                  )
-              }}
-          />
-          <Tab.Screen
-              name="Speed Test"
-              component={SpeedTestScreen}
-              options={{
-                  tabBarLabel: "Speed Test",
-                  tabBarIcon: ({ color}) => (
-                      <MaterialCommunityIcons name="speedometer" color={color} size={26} />
-                  )
-              }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-  );
+if (Platform.OS === 'web') {
+  const rootTag = document.getElementById('root') || document.getElementById('main');
+  AppRegistry.runApplication('WiFiAnalyzer', { rootTag });
 }
-
-AppRegistry.registerComponent('WiFiAnalyzer', () => App);
