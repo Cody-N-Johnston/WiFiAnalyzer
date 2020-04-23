@@ -1,20 +1,66 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, PermissionsAndroid} from 'react-native';
 import styles from '../../Style.js';
 import RNSpeedometer from 'react-native-speedometer';
 import RNFetchBlob from "rn-fetch-blob";
+import { db } from "../../config/firebaseSDK.js";
+import NetInfo from "@react-native-community/netinfo";
 
 class SpeedTestScreen extends Component {
     state = {
-        value: 0,
-        progress: 0,
         downloadSpeed: 0,
-        imageUrl: 'https://wifi-analyzer-final.s3.amazonaws.com/test-image.jpg',
+        imageUrl: 'https://wifi-analyzer-final.s3.amazonaws.com/large-image.jpg',
+        ssid: null,
+        testFinished: false,
     }
 
-    onChange = (value) => this.setState({value: parseInt(value)});
+    requestPermissions = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: "WiFiAnalyzer Location Permission",
+                    message:
+                        "WiFiAnalyzer needs access to your location " +
+                        "so it can retrieve your SSID (Network name).",
+                    buttonNeutral: "Ask Me Later",
+                    buttonNegative: "Cancel",
+                    buttonPositive: "OK"
+                }
+            );
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+            console.warn(err);
+            return false;
+        }
+    }
 
-    onPress = () => {
+    componentDidMount = () => {
+        let networkName = '';
+        this.requestPermissions()
+            .then((result) => {
+                if (result === true) {
+                    NetInfo.fetch()
+                        .then(state => {
+                            networkName = state.details.ssid;
+                            this.setState({ ssid: networkName });
+                        })
+                } else {
+                    console.log('Location permission denied');
+                }
+            });
+    }
+
+    addSpeed = (networkSpeed) => {
+        let createdAt = new Date().toISOString();
+        db.ref('speed_tests/').push({
+            created_at: createdAt,
+            network_speed: networkSpeed,
+            ssid: this.state.ssid,
+        })
+    }
+
+    measureNetworkSpeed = () => {
         const startTime = new Date().getTime();
         const speeds = [];
 
@@ -23,23 +69,25 @@ class SpeedTestScreen extends Component {
         })
             .fetch('GET', this.state.imageUrl)
             .progress({ interval: 250 }, (received, total) => {
-                let progress = (received/total) * 100;
                 let currentTime = new Date().getTime();
                 let duration = (currentTime - startTime) / 1000;
                 let speed = ((received * 8) / (1024 ** 2 * duration));
 
                 speeds.push(speed);
                 console.log('received', speed);
-                this.setState({ value: speed })
+                this.setState({ downloadSpeed: speed })
             })
             .then((res) => {
-              let status = res.info().status;
-              let endTime = new Date().getTime();
-              let finalSpeed = (speeds.reduce((total, value) => total + value)) / speeds.length;
+                let status = res.info().status;
+                let finalSpeed = (speeds.reduce((total, value) => total + value)) / speeds.length;
 
-              if (status === 200) {
-                  console.log("Got good response, cool " + finalSpeed);
-              }
+                if (status === 200) {
+                    this.setState( {downloadSpeed: finalSpeed});
+                    this.setState({testFinished: true})
+                    this.addSpeed(finalSpeed);
+
+                    console.log("Got good response, cool " + finalSpeed);
+                }
             })
             .catch((err, statusCode) => {
                 console.log(err);
@@ -47,10 +95,14 @@ class SpeedTestScreen extends Component {
             });
     }
 
+    onPress = () => {
+       this.measureNetworkSpeed();
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <RNSpeedometer value={this.state.value} size={200}/>
+                <RNSpeedometer value={this.state.downloadSpeed} size={200}/>
                 <View style={speedStyles.footer}>
                     <TouchableOpacity
                         style={[styles.buttonContainer, styles.roundButton, speedStyles.button]}

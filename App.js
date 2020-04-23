@@ -5,6 +5,8 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { MaterialCommunityIcons, Foundation } from '@expo/vector-icons';
 import HomeScreen from './src/components/Screens/HomeScreen.js';
 import SpeedTestScreen from "./src/components/Screens/SpeedTestScreen";
+import LoginScreen from "./src/components/Screens/Login";
+import TestHistory from "./src/components/Screens/PreviousTests";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -18,16 +20,26 @@ function App() {
             activeColor='#8FBCBB'
             inactiveColor='#D8DEE9'
         >
-            {/* <Tab.Screen
-              name="List"
-              component={HomeScreen}
+           <Tab.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{
+                    tabBarLabel: 'Login',
+                    tabBarIcon: ({ color}) => (
+                        <MaterialCommunityIcons name="login" color={color} size={25} />
+                    )
+                }}
+           />
+           <Tab.Screen
+              name="Test History"
+              component={TestHistory}
               options={{
-                  tabBarLabel: 'List',
+                  tabBarLabel: 'Test History',
                   tabBarIcon: ({ color}) => (
                       <Foundation name="list" color={color} size={25} />
                   )
               }}
-          />*/}
+          />
           <Tab.Screen
               name="Speed Test"
               component={SpeedTestScreen}
