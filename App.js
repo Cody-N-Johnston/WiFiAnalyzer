@@ -3,9 +3,7 @@ import {StyleSheet, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons, Foundation } from '@expo/vector-icons';
-import HomeScreen from './src/components/Screens/HomeScreen.js';
 import SpeedTestScreen from "./src/components/Screens/SpeedTestScreen";
-import LoginScreen from "./src/components/Screens/Login";
 import TestHistory from "./src/components/Screens/PreviousTests";
 
 const Tab = createMaterialBottomTabNavigator();
@@ -13,32 +11,22 @@ const Tab = createMaterialBottomTabNavigator();
 function App() {
   return (
       <NavigationContainer>
-        <Tab.Navigator
+          <Tab.Navigator
             barStyle={{
                 backgroundColor: '#2E3440'
             }}
             activeColor='#8FBCBB'
             inactiveColor='#D8DEE9'
         >
-           <Tab.Screen
-                name="Login"
-                component={LoginScreen}
-                options={{
-                    tabBarLabel: 'Login',
-                    tabBarIcon: ({ color}) => (
-                        <MaterialCommunityIcons name="login" color={color} size={25} />
+        <Tab.Screen
+            name="Test History"
+            component={TestHistory}
+            options={{
+                tabBarLabel: 'Test History',
+                tabBarIcon: ({ color}) => (
+                    <Foundation name="list" color={color} size={25} />
                     )
-                }}
-           />
-           <Tab.Screen
-              name="Test History"
-              component={TestHistory}
-              options={{
-                  tabBarLabel: 'Test History',
-                  tabBarIcon: ({ color}) => (
-                      <Foundation name="list" color={color} size={25} />
-                  )
-              }}
+            }}
           />
           <Tab.Screen
               name="Speed Test"

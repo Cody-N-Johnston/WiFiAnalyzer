@@ -55,7 +55,7 @@ class SpeedTestScreen extends Component {
         let createdAt = new Date().toISOString();
         db.ref('speed_tests/').push({
             created_at: createdAt,
-            network_speed: networkSpeed,
+            network_speed: networkSpeed.toFixed(2),
             ssid: this.state.ssid,
         })
     }
@@ -85,8 +85,6 @@ class SpeedTestScreen extends Component {
                     this.setState( {downloadSpeed: finalSpeed});
                     this.setState({testFinished: true})
                     this.addSpeed(finalSpeed);
-
-                    console.log("Got good response, cool " + finalSpeed);
                 }
             })
             .catch((err, statusCode) => {
@@ -102,7 +100,13 @@ class SpeedTestScreen extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <RNSpeedometer value={this.state.downloadSpeed} size={200}/>
+                    {this.state.testFinished === true && (
+                        <View style={styles.row}>
+                            <Text style={[styles.lightText, speedStyles.header]} >{this.state.downloadSpeed.toFixed(2)}</Text>
+                            <Text style={[styles.lightText4, speedStyles.header]} > Mbps</Text>
+                        </View>
+                    )}
+                    <RNSpeedometer value={this.state.downloadSpeed} size={200}/>
                 <View style={speedStyles.footer}>
                     <TouchableOpacity
                         style={[styles.buttonContainer, styles.roundButton, speedStyles.button]}
@@ -120,21 +124,8 @@ const speedStyles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    textInput: {
-        borderBottomWidth: 0.3,
-        borderBottomColor: 'black',
-        height: 25,
-        fontSize: 16,
-        marginVertical: 50,
-        marginHorizontal: 20,
-    },
     mainContent: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    item: {
-        fontSize: 20,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -145,13 +136,6 @@ const speedStyles = StyleSheet.create({
     footer: {
         position: 'absolute',
         bottom: 0
-    },
-    error: {
-        fontSize: 30,
-        fontWeight: '700',
-        color: '#BF616A',
-        alignItems: 'center',
-        justifyContent: 'center'
     },
     header: {
         fontSize: 30,

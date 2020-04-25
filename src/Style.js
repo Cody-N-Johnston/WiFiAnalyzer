@@ -37,6 +37,22 @@ const styles = StyleSheet.create({
     },
     lightText2: {
         color: '#A3BE8C'
+    },
+    lightText3: {
+        color: '#D8DEE9'
+    },
+    lightText4: {
+        color: '#88C0D0'
+    },
+    col: {
+        flexDirection: 'column',
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    spacer: {
+        flex: 1
     }
 });
 
